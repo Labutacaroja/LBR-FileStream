@@ -16,6 +16,7 @@
 
 import logging
 from urllib import parse
+from tgfs.telegram import is_authorized
 
 from telethon import events
 from telethon.custom import Message
@@ -28,11 +29,21 @@ log = logging.getLogger(__name__)
 
 @client.on(events.NewMessage(incoming=True, func=lambda x: x.is_private and not x.file))
 async def handle_text_message(evt: events.NewMessage.Event) -> None:
+    user_id = evt.sender_id if hasattr(evt, 'sender_id') else evt.from_id
+    if not is_authorized(user_id):
+        await evt.reply("⛔️ No tienes permiso para usar este bot.")
+        return
     await evt.reply("Send me any telegram file or photo I will generate a link for it")
+
 
 @client.on(events.NewMessage(incoming=True, func=lambda x: x.is_private and x.file))
 async def handle_file_message(evt: events.NewMessage.Event) -> None:
+    user_id = evt.sender_id if hasattr(evt, 'sender_id') else evt.from_id
+    if not is_authorized(user_id):
+        await evt.reply("⛔️ No tienes permiso para usar este bot.")
+        return
     fwd_msg: Message = await evt.message.forward_to(Config.BIN_CHANNEL)
     url = f"{Config.PUBLIC_URL}/{fwd_msg.id}/{parse.quote(get_filename(evt))}"
     await evt.reply(url)
     log.info("Generated Link %s", url)
+
