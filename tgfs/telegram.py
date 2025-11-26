@@ -17,6 +17,14 @@
 import asyncio
 import importlib.util
 import logging
+import os
+
+# Leer los usuarios autorizados desde el entorno
+AUTH_USERS = os.getenv('AUTH_USERS', '')
+AUTHORIZED_IDS = [int(uid.strip()) for uid in AUTH_USERS.split(',') if uid.strip().isdigit()]
+
+def is_authorized(user_id):
+    return user_id in AUTHORIZED_IDS
 
 from pathlib import Path
 from typing import Dict, Optional, Tuple
