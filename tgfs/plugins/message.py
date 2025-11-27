@@ -43,7 +43,7 @@ async def handle_file_message(evt: events.NewMessage.Event) -> None:
         await evt.reply("⛔️ No tienes permiso para usar este bot.")
         return
     fwd_msg: Message = await evt.message.forward_to(Config.BIN_CHANNEL)
-    url = f"{Config.PUBLIC_URL}/{fwd_msg.id}/{parse.quote(get_filename(evt))}"
+    url = f"http://labutacaroja.github.io/?video={Config.PUBLIC_URL}/{fwd_msg.id}/{parse.quote(get_filename(evt))}"
     await evt.reply(url)
     log.info("Generated Link %s", url)
 
